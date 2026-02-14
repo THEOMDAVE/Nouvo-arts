@@ -1,0 +1,53 @@
+@{
+    ViewData["Title"] = "Admin Panel — Nouvo Studio";
+    ViewData["Page"] = "admin";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->        
+        <partial name="_AdminSideBar" />
+
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10 admin-content p-4">
+            <h2>Dashboard</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Categories</h5>
+                            <h3 class="text-primary">@ViewBag.CategoryCount</h3>
+                            <p class="text-muted">Total categories</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Spaces</h5>
+                            <h3 class="text-primary">@ViewBag.SpacesCount</h3>
+                            <p class="text-muted">Total spaces</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Artworks</h5>
+                            <h3 class="text-primary">@ViewBag.ArtworkCount</h3>
+                            <p class="text-muted">Total artworks</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .admin-sidebar { min-height: 100vh; background: #f8f9fa; }
+    .admin-content { min-height: 100vh; }
+    .form-floating > .form-control:focus ~ label { color: #0d6efd; }
+    .image-preview { max-width: 200px; max-height: 200px; object-fit: cover; }
+    .loading { opacity: 0.6; pointer-events: none; }
+</style>

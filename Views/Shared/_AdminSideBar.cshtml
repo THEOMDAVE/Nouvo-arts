@@ -1,0 +1,85 @@
+﻿<link href="https://unpkg.com/cropperjs/dist/cropper.css" rel="stylesheet" />
+<script src="https://unpkg.com/cropperjs/dist/cropper.js"></script>
+<script src="~/js/imageCropper.js"></script>
+
+<!-- Admin Sidebar Overlay (Mobile Only) -->
+<div class="admin-sidebar-overlay" id="adminSidebarOverlay"></div>
+
+<!-- Admin Sidebar -->
+<nav class="col-md-3 col-lg-2 admin-sidebar" id="adminSidebar">
+    <div class="admin-sidebar-header">
+        <div class="d-flex justify-content-between align-items-center p-3">
+            <div>
+                <img src="~/images/Nouvö_Studio_Black_Logo.png" alt="Nouvo Studio" class="admin-logo mb-2">
+                <p class="text-muted small mb-0">Admin Panel</p>
+            </div>
+            <button class="btn btn-link text-dark d-md-none admin-sidebar-close" id="adminSidebarClose" aria-label="Close sidebar">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+    </div>
+    <ul class="nav nav-pills flex-column px-2 pb-3">
+        <li class="nav-item">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")" asp-controller="Admin" asp-action="Index">
+                <i class="bi bi-speedometer2"></i> <span class="admin-sidebar-text">Dashboard</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["action"]?.ToString() == "Categories" ? "active" : "")" asp-controller="Admin" asp-action="Categories">
+                <i class="bi bi-collection"></i> <span class="admin-sidebar-text">Categories</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["action"]?.ToString() == "Mediums" ? "active" : "")" asp-controller="Admin" asp-action="Mediums">
+                <i class="bi bi-droplet-half"></i> <span class="admin-sidebar-text">Mediums</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["action"]?.ToString() == "Spaces" ? "active" : "")" asp-controller="Admin" asp-action="Spaces">
+                <i class="bi bi-palette"></i> <span class="admin-sidebar-text">Spaces</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["action"]?.ToString() == "Artworks" ? "active" : "")" asp-controller="Admin" asp-action="Artworks">
+                <i class="bi bi-palette"></i> <span class="admin-sidebar-text">Artworks</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["action"]?.ToString() == "Blog" ? "active" : "")" asp-controller="Admin" asp-action="Blog">
+                <i class="bi bi-journal-text"></i> <span class="admin-sidebar-text">Blog</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["action"]?.ToString() == "Customizations" ? "active" : "")" asp-controller="Admin" asp-action="Customizations">
+                <i class="bi bi-brush"></i> <span class="admin-sidebar-text">Customizations</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-controller="Home" asp-action="Index" target="_blank">
+                <i class="bi bi-eye"></i> <span class="admin-sidebar-text">View Site</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+
+
+<div class="modal fade" id="globalCropModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5>Crop Image</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <img id="globalCropImage" style="max-width:100%" />
+            </div>
+
+            <div class="modal-footer">
+                <button id="globalCropBtn" class="btn btn-primary">Crop</button>
+            </div>
+
+        </div>
+    </div>
+</div>

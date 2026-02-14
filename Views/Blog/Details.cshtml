@@ -1,0 +1,25 @@
+@model NouvoStudio.Models.BlogPost
+@{
+    ViewData["Title"] = Model.Title + " — Nouvo Studio";
+    ViewData["Page"] = "blog";
+}
+
+<main class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <img src="@Model.Image" alt="@Model.Title" class="img-fluid rounded mb-4" />
+                <h1 class="section-title">@Model.Title</h1>
+                <div class="text-muted mb-4">@Model.PublishedAt.ToString("MMMM dd, yyyy")</div>
+                <article class="content">
+                    @Html.Raw(Model.Content)
+                </article>
+                <div class="mt-4">
+                    <a asp-controller="Blog" asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back to Blog</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+

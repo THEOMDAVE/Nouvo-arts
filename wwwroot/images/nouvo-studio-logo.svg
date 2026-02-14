@@ -1,0 +1,18 @@
+<svg width="200" height="80" viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="200" height="80" fill="black"/>
+  
+  <!-- Stylized N Logo Mark with brushstroke effect -->
+  <!-- Left stroke with irregular edges -->
+  <path d="M25 12 L25 48 L32 48 L32 15 L30 12 L28 10 L25 12 Z" fill="white"/>
+  
+  <!-- Right stroke (curved) with brushstroke effect -->
+  <path d="M55 18 Q70 32 60 52 L52 50 Q65 35 55 18 Z" fill="white"/>
+  
+  <!-- Additional brushstroke details -->
+  <path d="M25 12 L28 8 L30 12" fill="white"/>
+  <path d="M55 18 L58 15 L60 18" fill="white"/>
+  
+  <!-- Text: Nouvo Studio -->
+  <text x="100" y="60" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="white" text-anchor="middle">Nouvo Studio</text>
+</svg>

@@ -1,0 +1,87 @@
+@model IEnumerable<NouvoStudio.Models.Artwork>
+@{
+    ViewData["Title"] = "Favorites — Nouvo Studio";
+    ViewData["Page"] = "favorites";
+}
+
+<main class="py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Your Favorites</h2>
+            <a asp-controller="Artworks" asp-action="Index" class="btn btn-outline-secondary">Back to Artworks</a>
+        </div>
+
+        <div class="row g-3" id="favoritesGrid">
+            @foreach (var artwork in Model)
+            {
+                <div class="col-6 col-md-4 col-lg-3" data-art-id="@artwork.Id">
+                    <div class="card art-card h-100">
+                        <button class="btn btn-light rounded-circle fav shadow-sm" data-fav-id="@artwork.Id" aria-label="Toggle favorite">
+                            <i class="bi bi-heart-fill text-danger"></i>
+                        </button>
+                        <img class="thumb" src="@artwork.Image" alt="@artwork.Name" loading="lazy">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <div class="fw-semibold">@artwork.Name</div>
+                                    <div class="text-muted small">@artwork.Code</div>
+                                </div>
+                                <div class="text-nowrap small">
+                                    @if (artwork.Price.HasValue)
+                                    {
+                                        <span class="price">$@artwork.Price.Value.ToString("F0")</span>
+                                    }
+                                </div>
+                            </div>
+                            <div class="small text-muted">@artwork.Size • @artwork.Medium</div>
+                            <a asp-controller="Artworks" asp-action="Details" asp-route-id="@artwork.Id" class="btn btn-outline-dark w-100 mt-2">View details</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5">
+                <h3 class="text-muted">No favorites yet</h3>
+                <p class="text-muted">Tap the heart on artworks to add them here.</p>
+                <a asp-controller="Artworks" asp-action="Index" class="btn btn-primary">Browse Artworks</a>
+            </div>
+        }
+    </div>
+</main>
+
+@section Scripts {
+    <script>
+        $(function(){
+            // Filter to only keep favorited cards on load
+            function getFavorites(){
+                try { return JSON.parse(localStorage.getItem('nouvo:favorites')||'[]').map(Number); } catch(e){ return []; }
+            }
+            const favs = new Set(getFavorites());
+            $('#favoritesGrid [data-art-id]').each(function(){
+                const id = Number($(this).data('art-id'));
+                if (!favs.has(id)) {
+                    $(this).remove();
+                }
+            });
+
+            // When toggled off here, remove the card from the grid
+            $(document).on('click','[data-fav-id]', function(){
+                const id = Number($(this).data('fav-id'));
+                setTimeout(() => {
+                    const currentFavs = new Set(getFavorites());
+                    if (!currentFavs.has(id)) {
+                        $(`[data-art-id="${id}"]`).remove();
+                        if ($('#favoritesGrid').children().length === 0) {
+                            location.reload();
+                        }
+                    }
+                }, 50);
+            });
+        });
+    </script>
+}
+
+

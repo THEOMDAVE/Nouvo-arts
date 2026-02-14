@@ -1,0 +1,68 @@
+@model NouvoStudio.Models.CustomizationRequest
+@{
+    ViewData["Title"] = "Customization Request — Admin Panel";
+    ViewData["Page"] = "admin";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <partial name="_AdminSideBar" />
+        <div class="col-md-9 col-lg-10 admin-content p-4">
+            <div class="mb-4">
+                <a asp-action="Customizations" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back</a>
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h4 class="mb-3">Customization Request</h4>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="mb-2"><strong>Name:</strong> @Model.Name</div>
+                            <div class="mb-2"><strong>Email:</strong> @Model.Email</div>
+                            @if (!string.IsNullOrEmpty(Model.Phone))
+                            {
+                                <div class="mb-2"><strong>Phone:</strong> @Model.Phone</div>
+                            }
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-2"><strong>Date:</strong> @Model.CreatedAt.ToString("MMM dd, yyyy HH:mm")</div>
+                            <div class="mb-2"><strong>Status:</strong> 
+                                @if (Model.IsRead)
+                                {
+                                    <span class="badge bg-success">Read</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning">Unread</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <div class="mb-2"><strong>Artwork Type:</strong> @Model.ArtworkType</div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-2"><strong>Medium:</strong> @Model.Medium</div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-2"><strong>Size:</strong> @Model.Size</div>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="mb-3">
+                        <strong>Description:</strong>
+                        <div class="mt-2 p-3 bg-light rounded">@Model.Description</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .admin-sidebar { min-height: 100vh; background: #f8f9fa; }
+    .admin-content { min-height: 100vh; }
+</style>
+

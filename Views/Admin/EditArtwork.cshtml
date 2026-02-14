@@ -1,0 +1,254 @@
+@model NouvoStudio.Models.Artwork
+@{
+    ViewData["Title"] = "Edit Artwork — Admin Panel";
+    ViewData["Page"] = "admin";
+    var categories = ViewBag.Categories as IEnumerable<NouvoStudio.Models.Category>;
+    var spaces = ViewBag.Spaces as IEnumerable<NouvoStudio.Models.Spaces>;
+    var mediums = ViewBag.Mediums as IEnumerable<NouvoStudio.Models.Medium>;
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <partial name="_AdminSideBar" />
+
+        <div class="col-md-9 col-lg-10 admin-content p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Edit Artwork</h2>
+                <a asp-action="Artworks" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Artworks
+                </a>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <form asp-action="EditArtwork" method="post" enctype="multipart/form-data">
+                        <input asp-for="Id" type="hidden" />
+                        <input asp-for="Image" type="hidden" />
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Name" class="form-label"></label>
+                                    <input asp-for="Name" class="form-control" />
+                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Code" class="form-label"></label>
+                                    <input asp-for="Code" class="form-control" />
+                                    <span asp-validation-for="Code" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Categories</label>
+                                    <div class="row">
+                                        @{
+                                            var selectedCategoryIds = !string.IsNullOrEmpty(Model.CategoryIds) 
+                                                ? Model.CategoryIds.Split(',').Select(int.Parse).ToArray() 
+                                                : new int[0];
+                                        }
+                                        @foreach (var category in categories)
+                                        {
+                                            <div class="col-md-6 col-lg-4 mb-2">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="selectedCategoryIds" value="@category.Id" id="category_@category.Id" 
+                                                           @(selectedCategoryIds.Contains(category.Id) ? "checked" : "")>
+                                                    <label class="form-check-label" for="category_@category.Id">
+                                                        @category.Name
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                    <span asp-validation-for="CategoryIds" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Spaces</label>
+                                    <div class="row">
+                                        @{
+                                            var selectedSpaceIds = !string.IsNullOrEmpty(Model.SpaceIds)
+                                            ? Model.SpaceIds.Split(',').Select(int.Parse).ToArray()
+                                            : new int[0];
+                                        }
+                                        @foreach (var space in spaces)
+                                        {
+                                            <div class="col-md-6 col-lg-4 mb-2">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="selectedSpaceIds" value="@space.Id" id="space_@space.Id"
+                                                           @(selectedSpaceIds.Contains(space.Id) ? "checked" : "")>
+                                                    <label class="form-check-label" for="space_@space.Id">
+                                                        @space.Name
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                    <span asp-validation-for="SpaceIds" class="text-danger"></span>
+                                </div>
+
+                                @* <div class="mb-3">
+                                    <label asp-for="SpaceId" class="form-label">Space</label>
+                                    <select asp-for="SpaceId" class="form-select">
+                                        <option value="">Select a space (optional)</option>
+                                        @if (spaces != null)
+                                        {
+                                            @foreach (var space in spaces)
+                                            {
+                                                <option value="@space.Id" @(Model.SpaceId == space.Id ? "selected" : "")>@space.Name</option>
+                                            }
+                                        }
+                                    </select>
+                                    <span asp-validation-for="SpaceId" class="text-danger"></span>
+                                </div> *@
+
+                                <div class="mb-3">
+                                    <label asp-for="HeightFeet" class="form-label">Height (Feet)</label>
+                                    <input asp-for="HeightFeet" class="form-control" type="number" min="1" />
+                                    <span asp-validation-for="HeightFeet" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="WidthFeet" class="form-label">Width (Feet)</label>
+                                    <input asp-for="WidthFeet" class="form-control" type="number" min="1" />
+                                    <span asp-validation-for="WidthFeet" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Size" class="form-label">Size (Auto-generated)</label>
+                                    <input asp-for="Size" class="form-control" readonly />
+                                    <small class="text-muted">This will be automatically generated from Height and Width</small>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Medium" class="form-label"></label>
+                                    <select asp-for="Medium" class="form-select">
+                                        <option value="">Select medium</option>
+                                        @if (mediums != null)
+                                        {
+                                            @foreach (var medium in mediums)
+                                            {
+                                                <option value="@medium.Name" selected="@(Model.Medium == medium.Name)">@medium.Name</option>
+                                            }
+                                        }
+                                    </select>
+                                    <span asp-validation-for="Medium" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Price" class="form-label"></label>
+                                    <input asp-for="Price" class="form-control" type="number" step="0.01" min="0" />
+                                    <span asp-validation-for="Price" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Image</label>
+                                    <input name="imageFile" type="file" accept="image/*" class="form-control" />
+                                    <span asp-validation-for="Image" class="text-danger"></span>
+                                    @if (!string.IsNullOrEmpty(Model.Image))
+                                    {
+                                        <div class="mt-2">
+                                            <img src="@Model.Image" alt="Current image" style="max-height:120px;object-fit:cover;border-radius:4px;" />
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Description" class="form-label"></label>
+                                    <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                                    <span asp-validation-for="Description" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3 form-check">
+                                    <input asp-for="IsFeatured" class="form-check-input" />
+                                    <label asp-for="IsFeatured" class="form-check-label">
+                                        Featured Artwork
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check"></i> Update Artwork
+                            </button>
+                            <a asp-action="Artworks" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .admin-sidebar { min-height: 100vh; background: #f8f9fa; }
+    .admin-content { min-height: 100vh; }
+</style>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // // Auto-update Size field when HeightFeet or WidthFeet changes
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     const heightInput = document.querySelector('input[name="HeightFeet"]');
+        //     const widthInput = document.querySelector('input[name="WidthFeet"]');
+        //     const sizeInput = document.querySelector('input[name="Size"]');
+            
+        //     function updateSize() {
+        //         const height = heightInput.value || 0;
+        //         const width = widthInput.value || 0;
+        //         if (height > 0 && width > 0) {
+        //             sizeInput.value = height + ' X ' + width;
+        //         } else {
+        //             sizeInput.value = '';
+        //         }
+        //     }
+            
+        //     if (heightInput && widthInput && sizeInput) {
+        //         heightInput.addEventListener('input', updateSize);
+        //         widthInput.addEventListener('input', updateSize);
+        //         // Update on page load
+        //         updateSize();
+        //     }
+        // });
+
+        // Auto-update Size field based on dimensions
+        document.addEventListener('DOMContentLoaded', function () {
+            const heightInput = document.querySelector('input[name="HeightFeet"]');
+            const widthInput = document.querySelector('input[name="WidthFeet"]');
+            const sizeInput = document.querySelector('input[name="Size"]');
+
+            function updateSize() {
+                const height = parseFloat(heightInput.value) || 0;
+                const width = parseFloat(widthInput.value) || 0;
+
+                if (height > 0 && width > 0) {
+                    const area = height * width;
+
+                    let category = "";
+                    if (area <= 400) category = "Small";
+                    else if (area <= 900) category = "Medium";
+                    else if (area <= 1600) category = "Large";
+                    else category = "ExtraLarge";
+
+                    // Save result into Size field (example: "20 X 20 (Small)")
+                    sizeInput.value = `${height} X ${width} (${category})`;
+                } else {
+                    sizeInput.value = "";
+                }
+            }
+
+            if (heightInput && widthInput && sizeInput) {
+                heightInput.addEventListener('input', updateSize);
+                widthInput.addEventListener('input', updateSize);
+                updateSize();
+            }
+        });
+
+    </script>
+}
+
+

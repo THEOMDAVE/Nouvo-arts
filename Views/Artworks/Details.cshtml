@@ -1,0 +1,123 @@
+@model NouvoStudio.Models.Artwork
+@{
+    ViewData["Title"] = $"{Model.Name} — Nouvo Studio";
+    ViewData["Page"] = "artworks";
+}
+
+<main class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-7 d-flex justify-content-center">
+                <img src="@Model.Image" alt="@Model.Name" style="height: 80vh !important;" class="img-fluid rounded">
+            </div>
+            <div class="col-lg-5">
+                <h1 class="section-title">@Model.Name</h1>
+                <div class="text-muted mb-3">@Model.Code</div>
+                
+                <div class="row mb-3">
+                   <div class="col-6">
+                        <div class="fw-semibold">Medium</div>
+                        <div class="text-muted">@Model.Medium</div>
+                    </div>
+                    <div class="col-6">
+                        <div class="fw-semibold">Size</div>
+                        <div class="text-muted">@Model.HeightFeet in X @Model.WidthFeet in</div>
+                    </div>
+                </div>
+                @if (Model.Price.HasValue)
+                {
+                    <div class="h4 text-primary mb-3">$@Model.Price.Value.ToString("F0")</div>
+                }
+                @if (!string.IsNullOrEmpty(Model.Description))
+                {
+                    <div class="mb-4">
+                        <h5>Description</h5>
+                        <p>@Model.Description</p>
+                    </div>
+                }
+                
+                @{
+                    var categoryIds = !string.IsNullOrEmpty(Model.CategoryIds)
+                    ? Model.CategoryIds.Split(',').Select(int.Parse).ToArray()
+                    : Array.Empty<int>();
+
+                    var allCategories = ViewBag.Categories as IEnumerable<Category>;
+                }
+
+                @if (categoryIds.Any() && allCategories != null)
+                {
+                    <div class="mb-4">
+                        <h5>Styles</h5>
+
+                        <div class="d-flex flex-wrap gap-2">
+                            @foreach (var categoryId in categoryIds)
+                            {
+                                var category = allCategories.FirstOrDefault(c => c.Id == categoryId);
+
+                                if (category != null)
+                                {
+                                    <a asp-controller="Categories"
+                                       asp-action="Details"
+                                       asp-route-id="@category.Id"
+                                       class="btn btn-outline-dark btn-sm">
+                                        @category.Name
+                                    </a>
+                                }
+                            }
+                        </div>
+                    </div>
+                }
+
+
+                @{
+                    var spaceIds = !string.IsNullOrEmpty(Model.SpaceIds)
+                    ? Model.SpaceIds.Split(',').Select(int.Parse).ToArray()
+                    : new int[0];
+
+                    var allSpaces = ViewBag.Spaces as IEnumerable<Spaces>;
+
+                }
+                @if (spaceIds.Any() && allSpaces != null)
+                {
+                    <div class="mb-4">
+                        <h5>Spaces</h5>
+                            <div class="d-flex flex-wrap gap-2">
+                                @foreach (var spaceId in spaceIds)
+                                {
+                                    var space = allSpaces.FirstOrDefault(c => c.Id == spaceId);
+                                    if (space != null)
+                                    {
+                                        <a asp-controller="Spaces"
+                                           asp-action="Details"
+                                           asp-route-id="@space.Id"
+                                           class="btn btn-outline-dark btn-sm">
+                                            @space.Name
+                                        </a>
+                                    }
+                                }
+                            </div>
+                    </div>
+                }
+                   
+                <div class="bg-light rounded mb-4">
+                    <div class="fw-semibold mb-2">Interested in this artwork?</div>
+                    <p class="mb-3">Contact us to learn more about availability, shipping, and pricing.</p>
+                    <div class="d-flex gap-2">
+                        <a href="tel:+919898571044" class="btn btn-dark">
+                            <i class="bi bi-telephone"></i> Call +91 9898571044
+                        </a>
+                        @* <button class="btn btn-outline-dark" data-fav-id="@Model.Id">
+                            <i class="bi bi-heart-fill text-dark"></i> Toggle Favorite
+                        </button> *@
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <a asp-controller="Artworks" asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Back to Artworks
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

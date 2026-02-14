@@ -1,0 +1,31 @@
+@model IEnumerable<NouvoStudio.Models.Spaces>
+@{
+    ViewData["Title"] = "Spaces — Nouvo Studio";
+    ViewData["Page"] = "spaces";
+}
+
+<main class="py-6">
+    <div class="container">
+        <div class="d-flex align-items-end justify-content-between mb-4">
+            <h1 class="section-title m-0">Spaces</h1>
+            <a asp-controller="Artworks" asp-action="Index" class="link-dark">View artworks</a>
+        </div>
+
+        <div class="row g-4" id="spacesGrid">
+            @foreach (var space in Model)
+            {
+                <div class="col-6 col-md-4 col-lg-3">
+                    <a class="text-decoration-none" asp-controller="Artworks" asp-action="Index" asp-route-category="@space.Id" aria-label="Open @space.Name space">
+                        <div class="card category-card">
+                            <img class="bg-img" src="@space.Image" alt="@space.Name">
+                            <div class="title">@space.Name</div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+    
+</main>
+
+

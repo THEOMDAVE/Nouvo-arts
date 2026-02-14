@@ -1,0 +1,31 @@
+@model NouvoStudio.Models.ContactMessage
+@{
+    ViewData["Title"] = "Contact Message — Admin Panel";
+    ViewData["Page"] = "admin";
+}
+
+<div class="container py-5">
+    <div class="mb-4">
+        <a asp-action="ContactMessages" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back</a>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <h4 class="mb-3">@Model.Subject</h4>
+            <div class="mb-2"><strong>From:</strong> @Model.Name (@Model.Email)</div>
+            @if (!string.IsNullOrEmpty(Model.Phone))
+            {
+                <div class="mb-2"><strong>Phone:</strong> @Model.Phone</div>
+            }
+            <div class="mb-2 text-muted">@Model.CreatedAt.ToString("MMM dd, yyyy HH:mm")</div>
+            @if (!string.IsNullOrWhiteSpace(Model.InterestedCodes))
+            {
+                <div class="mb-2"><strong>Interested Codes:</strong> @Model.InterestedCodes</div>
+            }
+            <hr />
+            <div>@Model.Message</div>
+        </div>
+    </div>
+</div>
+
+

@@ -1,0 +1,39 @@
+@model IEnumerable<NouvoStudio.Models.BlogPost>
+@{
+    ViewData["Title"] = "Blog — Nouvo Studio";
+    ViewData["Page"] = "blog";
+}
+
+<main class="py-5">
+    <div class="container">
+        <h1 class="section-title mb-4">From the Studio</h1>
+        <div class="row g-4">
+            @foreach (var post in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <a class="text-decoration-none link-dark" asp-controller="Blog" asp-action="Details" asp-route-slug="@post.Slug">
+                        <div class="card h-100">
+                            <img src="@post.Image" class="card-img-top" alt="@post.Title" style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <div class="fw-semibold">@post.Title</div>
+                                <div class="text-muted small mb-2">@post.PublishedAt.ToString("MMM dd, yyyy")</div>
+                                <p class="small">@post.Excerpt</p>
+                                <span class="btn btn-outline-dark">Read more</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5">
+                <h3 class="text-muted">No posts published yet</h3>
+            </div>
+        }
+    </div>
+    
+</main>
+
+

@@ -1,0 +1,28 @@
+@model IEnumerable<NouvoStudio.Models.Category>
+@{
+    ViewData["Title"] = "Categories — Nouvo Studio";
+    ViewData["Page"] = "categories";
+}
+
+<main class="py-6">
+    <div class="container">
+        <div class="d-flex align-items-end justify-content-between mb-4">
+            <h1 class="section-title m-0">Styles</h1>
+            <a asp-controller="Artworks" asp-action="Index" class="link-dark">View artworks</a>
+        </div>
+
+        <div class="row g-4" id="categoriesGrid">
+            @foreach (var category in Model)
+            {
+                <div class="col-6 col-md-4 col-lg-3">
+                    <a class="text-decoration-none" asp-controller="Artworks" asp-action="Index" asp-route-category="@category.Id" aria-label="Open @category.Name category">
+                        <div class="card category-card">
+                            <img class="bg-img" src="@category.Image" alt="@category.Name">
+                            <div class="title">@category.Name</div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</main>

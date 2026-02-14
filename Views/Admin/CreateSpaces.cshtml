@@ -1,0 +1,73 @@
+﻿@model NouvoStudio.Models.Spaces
+@{
+    ViewData["Title"] = "Create Spaces — Admin Panel";
+    ViewData["Page"] = "admin";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <partial name="_AdminSideBar" />
+
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10 admin-content p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Create Space</h2>
+                <a asp-action="Spaces" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Explore By Spaces
+                </a>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <form asp-action="CreateSpaces" method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label"></label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label"></label>
+                            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Image</label>
+                            <input name="imageFile" type="file" accept="image/*" class="form-control image-cropper" />
+                            <span asp-validation-for="Image" class="text-danger"></span>
+                        </div>
+                        <img class="mt-2 crop-preview" style="height:250px;display:none;" />
+
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check"></i> Create Space
+                            </button>
+                            <a asp-action="Spaces" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .admin-sidebar {
+        min-height: 100vh;
+        background: #f8f9fa;
+    }
+
+    .admin-content {
+        min-height: 100vh;
+    }
+</style>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

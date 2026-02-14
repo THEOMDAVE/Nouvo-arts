@@ -1,0 +1,20 @@
+﻿@model IEnumerable<NouvoStudio.Models.Artwork>
+
+@foreach (var artwork in Model)
+{
+    <div class="masonry-item">
+        <div class="art-card">
+            <a asp-controller="Artworks" asp-action="Details" asp-route-id="@artwork.Id">
+                <img class="thumb"
+                     src="@artwork.Image"
+                     loading="lazy"
+                     decoding="async">
+            </a>
+
+            <div class="overlay">
+                <h5>@artwork.Name</h5>
+                <p>@artwork.Code</p>
+            </div>
+        </div>
+    </div>
+}

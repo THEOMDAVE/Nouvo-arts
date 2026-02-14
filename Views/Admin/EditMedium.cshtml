@@ -1,0 +1,41 @@
+@model NouvoStudio.Models.Medium
+@{
+    ViewData["Title"] = "Edit Medium — Admin Panel";
+    ViewData["Page"] = "admin";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <partial name="_AdminSideBar" />
+        <div class="col-md-9 col-lg-10 admin-content p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Edit Medium</h2>
+                <a asp-action="Mediums" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Mediums
+                </a>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <form asp-action="EditMedium" method="post">
+                        <input asp-for="Id" type="hidden" />
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label"></label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <a asp-action="Mediums" class="btn btn-secondary">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+

@@ -1,0 +1,60 @@
+@model NouvoStudio.Models.Category
+@{
+    ViewData["Title"] = $"{Model.Name} — Nouvo Studio";
+    ViewData["Page"] = "categories";
+}
+
+<main class="py-6">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-md-6">
+                <img src="@Model.Image" alt="@Model.Name" class="img-fluid rounded">
+            </div>
+            <div class="col-md-6">
+                <h1 class="section-title">@Model.Name</h1>
+                @if (!string.IsNullOrEmpty(Model.Description))
+                {
+                    <p class="lead">@Model.Description</p>
+                }
+                <a asp-controller="Artworks" asp-action="Index" asp-route-category="@Model.Id" class="btn btn-dark">View Artworks</a>
+            </div>
+        </div>
+
+        <h2 class="mb-4">Artworks in this Style</h2>
+        <div class="masonry-container">
+            @if (ViewBag.Artworks != null)
+            {
+                var artworks = (IEnumerable<NouvoStudio.Models.Artwork>)ViewBag.Artworks;
+                @foreach (var artwork in artworks)
+                {
+                    <div class="masonry-item">
+                        <div class="art-card">
+                            <button class="btn btn-light rounded-circle fav shadow-sm" data-fav-id="@artwork.Id" aria-label="Toggle favorite">
+                                <i class="bi bi-heart-fill text-dark"></i>
+                            </button>
+                            <a asp-controller="Artworks" asp-action="Details" asp-route-id="@artwork.Id">
+                                <img class="thumb" src="@artwork.Image" alt="@artwork.Name" loading="lazy">
+                            </a>
+                            <div class="overlay">
+                                <h5 class="artwork-name">@artwork.Name</h5>
+                                <p class="artwork-details">
+                                    @artwork.Code • @artwork.Size • @artwork.Medium
+                                    @if (artwork.Price.HasValue)
+                                    {
+                                        <br><span class="price">$@artwork.Price.Value.ToString("F0")</span>
+                                    }
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12">
+                    <p class="text-muted">No artworks found in this category.</p>
+                </div>
+            }
+        </div>
+    </div>
+</main>

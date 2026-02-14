@@ -1,0 +1,25 @@
+@model NouvoStudio.Models.Spaces
+@{
+    ViewData["Title"] = $"{Model.Name} — Nouvo Studio";
+    ViewData["Page"] = "spaces";
+}
+
+<main class="py-6">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-md-6">
+                <img src="@Model.Image" alt="@Model.Name" class="img-fluid rounded">
+            </div>
+            <div class="col-md-6">
+                <h1 class="section-title">@Model.Name</h1>
+                @if (!string.IsNullOrEmpty(Model.Description))
+                {
+                    <p class="lead">@Model.Description</p>
+                }
+                <a asp-controller="Spaces" asp-action="Index" class="btn btn-dark">Back to Spaces</a>
+            </div>
+        </div>
+    </div>
+</main>
+
+

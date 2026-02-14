@@ -1,0 +1,77 @@
+@model NouvoStudio.Models.ContactMessage
+@{
+    ViewData["Title"] = "Contact Us — Nouvo Studio";
+    ViewData["Page"] = "contact";
+}
+
+<main class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4 p-lg-5">
+                        <div class="text-center mb-4">
+                            <div class="fw-bold fs-3">We'd love to hear from you</div>
+                            <div class="text-muted">Send us a message and we'll get back shortly</div>
+                        </div>
+
+                        <form asp-action="Index" method="post" id="contactForm" novalidate>
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="Name" class="form-label"></label>
+                                        <input asp-for="Name" class="form-control" required />
+                                        <span asp-validation-for="Name" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="Email" class="form-label"></label>
+                                        <input asp-for="Email" type="email" class="form-control" required />
+                                        <span asp-validation-for="Email" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="Phone" class="form-label"></label>
+                                        <input asp-for="Phone" class="form-control" inputmode="numeric" pattern="^[0-9]{0,10}$" maxlength="10" placeholder="Digits only, up to 10" />
+                                        <span asp-validation-for="Phone" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="Subject" class="form-label"></label>
+                                        <input asp-for="Subject" class="form-control" required />
+                                        <span asp-validation-for="Subject" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Message" class="form-label"></label>
+                                <textarea asp-for="Message" class="form-control" rows="6" required></textarea>
+                                <span asp-validation-for="Message" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Artwork codes you are interested in (comma-separated)</label>
+                                <input asp-for="InterestedCodes" class="form-control" placeholder="e.g. ART001, ART123" />
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-dark btn-lg">Send message</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+

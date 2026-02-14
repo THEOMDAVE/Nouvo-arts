@@ -1,0 +1,43 @@
+@model NouvoStudio.Models.ContactMessage
+@{
+    ViewData["Title"] = "Message Sent — Nouvo Studio";
+    ViewData["Page"] = "contact";
+}
+
+<main class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="alert alert-success shadow-sm">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                        <div>
+                            <div class="fw-semibold">Thank you! Your message has been sent.</div>
+                            <div class="small">We will get back to you soon.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="mb-3">Your message</h5>
+                        <div class="mb-2"><strong>Name:</strong> @Model.Name</div>
+                        <div class="mb-2"><strong>Email:</strong> @Model.Email</div>
+                        @if (!string.IsNullOrEmpty(Model.Phone))
+                        {
+                            <div class="mb-2"><strong>Phone:</strong> @Model.Phone</div>
+                        }
+                        <div class="mb-2"><strong>Subject:</strong> @Model.Subject</div>
+                        <div class="mb-2"><strong>Message:</strong><br /> @Model.Message</div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+

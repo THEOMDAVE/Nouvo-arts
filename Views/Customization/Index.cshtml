@@ -1,0 +1,113 @@
+@model NouvoStudio.Models.CustomizationRequest
+@{
+    ViewData["Title"] = "Customization — Nouvo Studio";
+    ViewData["Page"] = "customization";
+    var mediums = ViewBag.Mediums as IEnumerable<NouvoStudio.Models.Medium>;
+}
+
+<main class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4 p-lg-5">
+                        <div class="text-center mb-4">
+                            <div class="fw-bold fs-3">Custom Artwork Request</div>
+                            <div class="text-muted">Tell us about your vision and we'll bring it to life</div>
+                        </div>
+
+                        @if (TempData["SuccessMessage"] != null)
+                        {
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                @TempData["SuccessMessage"]
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        }
+
+                        <form asp-action="Index" method="post" id="customizationForm" novalidate>
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="Name" class="form-label">Name <span class="text-danger">*</span></label>
+                                        <input asp-for="Name" class="form-control" required />
+                                        <span asp-validation-for="Name" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="Email" class="form-label">Email</label>
+                                        <input asp-for="Email" type="email" class="form-control" />
+                                        <span asp-validation-for="Email" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                    
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="Phone" class="form-label">PhArtworksone <span class="text-danger">*</span></label>
+                                        <input asp-for="Phone" class="form-control" inputmode="numeric" pattern="^[0-9]{0,10}$" maxlength="10" placeholder="Digits only, up to 10" required />
+                                        <span asp-validation-for="Phone" class="text-danger"></span>
+                                    </div>
+                                   @*  <div class="mb-3">
+                                        <label asp-for="ArtworkType" class="form-label">Type of Artwork <span class="text-danger">*</span></label>
+                                        <select asp-for="ArtworkType" class="form-select" required>
+                                            <option value="">Select artwork type</option>
+                                            <option value="Painting">Painting</option>
+                                            <option value="Sculpture">Sculpture</option>
+                                            <option value="Digital Art">Digital Art</option>
+                                            <option value="Mixed Media">Mixed Media</option>
+                                            <option value="Photography">Photography</option>
+                                            <option value="Drawing">Drawing</option>
+                                            <option value="Print">Print</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                        <span asp-validation-for="ArtworkType" class="text-danger"></span>
+                                    </div> *@
+                                </div> 
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="Medium" class="form-label">Medium <span class="text-danger">*</span></label>
+                                        <select asp-for="Medium" class="form-select" required>
+                                            <option value="">Select medium</option>
+                                            @if (mediums != null)
+                                            {
+                                                @foreach (var medium in mediums)
+                                                {
+                                                    <option value="@medium.Name">@medium.Name</option>
+                                                }
+                                            }
+                                        </select>
+                                        <span asp-validation-for="Medium" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Size" class="form-label">Size <span class="text-danger">*</span></label>
+                                <input asp-for="Size" class="form-control" placeholder="e.g., 24 X 36 inches, 2 X 3 feet" required />
+                                <small class="text-muted">Please specify dimensions (e.g., 24 X 36 inches, 2 X 3 feet)</small>
+                                <span asp-validation-for="Size" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Description" class="form-label">Description <span class="text-danger">*</span></label>
+                                <textarea asp-for="Description" class="form-control" rows="6" placeholder="Describe your vision, style preferences, color scheme, theme, or any specific requirements..." required></textarea>
+                                <span asp-validation-for="Description" class="text-danger"></span>
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-dark btn-lg">Submit Request</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+

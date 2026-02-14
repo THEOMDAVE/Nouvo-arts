@@ -1,0 +1,118 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Nouvo Studio</title>
+    <meta name="description" content="Nouvo Studio connects clients with artists and showcases curated artworks across modern categories. Explore, favorite, and inquire.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="icon" type="image/png" href="~/images/nouvö_studio_black_logo.png" />
+    <link href="https://unpkg.com/cropperjs/dist/cropper.css" rel="stylesheet" />
+    <img src="" />
+</head>
+   
+    <!-- Navbar -->
+   @* <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top border-bottom subtle-blur">
+        <div class="container">
+            <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+                <img src="~/images/Nouvö_Studio_name_logo.png" alt="Nouvo Studio" class="navbar-logo">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain" aria-controls="navMain" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navMain">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+                    <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Categories" asp-action="Index">Categories</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Artworks" asp-action="Index">Artworks</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Artworks" asp-action="Favorites">Explore By Spaces</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Artworks" asp-action="Favorites">Favorites</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Blog" asp-action="Index">Blog</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Contact" asp-action="Index">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Admin" asp-action="Index">Admin</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>*@
+<body data-page="@ViewData["Page"]">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top ns-navbar border-bottom">
+        <div class="container">
+            <a class="navbar-brand" style="padding: 0px; margin: -15px;" asp-controller="Home" asp-action="Index">
+                @* <img src="~/images/Nouvö_Studio_name_logo.png" alt="Nouvo Studio" class="ns-navbar-logo" /> *@
+                <img src="~/images/novostudio-logo.png" alt="Nouvo Studio" class="ns-navbar-logo" />
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain" aria-controls="navMain" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" style="font-size: 15px !important" id="navMain">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+                    <li class="nav-item"><a class="nav-link ns-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")" asp-controller="Home" asp-action="Index">Home</a></li>
+                    <li class="nav-item"><a class="nav-link ns-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Spaces" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")" asp-controller="Spaces" asp-action="Index">Explore Spaces</a></li>
+                    <li class="nav-item"><a class="nav-link ns-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Categories" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")" asp-controller="Categories" asp-action="Index">Styles</a></li>
+                    <li class="nav-item"><a class="nav-link ns-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Artworks" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")" asp-controller="Artworks" asp-action="Index">Artworks</a></li>
+                    <li class="nav-item"><a class="nav-link ns-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Customization" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")" asp-controller="Customization" asp-action="Index">Customization</a></li>
+                    @* <li class="nav-item"><a class="nav-link ns-link" asp-controller="Artworks" asp-action="Favorites">Favorites</a></li> *@
+                    <li class="nav-item"><a class="nav-link ns-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Blog" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")" asp-controller="Blog" asp-action="Index">Blog</a></li>
+                    @* <li class="nav-item"><a class="nav-link ns-link" asp-controller="Contact" asp-action="Index">Contact</a></li> *@
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li class="nav-item"><a class="nav-link ns-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" ? "active" : "")" asp-controller="Admin" asp-action="Index">Admin</a></li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <main>
+        @RenderBody()
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-top py-5 bg-white">
+        <div class="container small">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <img src="~/images/Nouvö_Studio_Black_Logo.png" alt="Nouvo Studio" class="footer-logo mb-2">
+                    <p class="text-muted mt-2">Contemporary art, curated with care. Discover original works across styles and mediums.</p>
+                </div>
+                <div class="col-md-3">
+                    <div class="fw-semibold mb-2">Navigate</div>
+                    <ul class="list-unstyled m-0">
+                        <li><a class="text-decoration-none link-dark" asp-controller="Categories" asp-action="Index">Styles</a></li>
+                        <li><a class="text-decoration-none link-dark" asp-controller="Artworks" asp-action="Index">Artworks</a></li>
+                        <li><a class="text-decoration-none link-dark" asp-controller="Spaces" asp-action="Index">Explore By Spaces</a></li>
+                        @* <li><a class="text-decoration-none link-dark" href="#">Favorites</a></li> *@
+                        <li><a class="text-decoration-none link-dark" asp-controller="Blog" asp-action="Index">Blog</a></li>
+                        <li><a class="text-decoration-none link-dark" asp-controller="Customization" asp-action="Index">Customization</a></li>
+                        @* <li><a class="text-decoration-none link-dark" asp-controller="Contact" asp-action="Index">Contact</a></li> *@
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <div class="fw-semibold mb-2">Connect</div>
+                    <div class="d-flex gap-3">
+                        <a href="https://www.instagram.com/nouvostudio.official/?igsh=MXB5Mm05Z3gzeGpuYg%3D%3D&utm_source=qr#" class="text-dark" aria-label="Instagram"><i class="bi bi-instagram fs-4"></i></a>
+                        <a href="https://www.linkedin.com/company/nouv%C3%B6-studio/" class="text-dark" aria-label="LinkedIn"><i class="bi bi-linkedin fs-4"></i></a>
+                        <a href="https://wa.me/919898571044?text=Hi%20I%20visited%20your%20website.%20I%20want%20to%20know%20more%20about%20your%20services." class="text-dark" aria-label="WhatsApp" target="_blank"> <i class="bi bi-whatsapp fs-4"></i> </a>
+
+                        @* <a href="#" class="text-dark" aria-label="Twitter"><i class="bi bi-twitter-x fs-4"></i></a> *@
+                    </div>
+                </div>
+            </div>
+            <div class="text-muted mt-4">© @DateTime.Now.Year Nouvo Studio. All rights reserved.</div>
+        </div>
+    </footer>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="~/js/imageCropper.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    
+    @await RenderSectionAsync("Scripts", required: false)
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/cropperjs/dist/cropper.js"></script>
+  
+</body>
+</html>
