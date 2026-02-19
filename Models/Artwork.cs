@@ -49,4 +49,5 @@ namespace NouvoStudio.Models
         [StringLength(500)]
         public string SpaceIds { get; set; } = string.Empty;
     }
+
 }

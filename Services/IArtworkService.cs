@@ -14,12 +14,14 @@ namespace NouvoStudio.Services
         Task DeleteAsync(int id);
         Task<bool> ExistsAsync(int id);
         Task<IEnumerable<Artwork>> SearchAsync(string query, string? size = null, string? medium = null);
-        Task<IEnumerable<Artwork>> SearchWithPagingAsync(
-    string search,
-    string size,
-    string medium,
-    int page,
-    int pageSize);
+        Task<PagedResult<Models.Artwork>> SearchWithPagingAsync(
+      int? categoryId,
+      int? spaceId,
+      string search,
+      string size,
+      string medium,
+      int page,
+      int pageSize);
 
     }
 }

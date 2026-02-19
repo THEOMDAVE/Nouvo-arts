@@ -1,5 +1,6 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using NouvoStudio.Data;
+using NouvoStudio.Models;
 using NouvoStudio.Services;
 
 namespace NouvoStudio.Controllers
@@ -21,40 +22,69 @@ namespace NouvoStudio.Controllers
             _spaces = spaces;
         }
 
-        public async Task<IActionResult> Index(
-    string? category,
-    string? search,
-    string? size,
-    string? medium,
-    int page = 1,
-    int pageSize = 12)
+        //public async Task<IActionResult> Index(string? category, string? search, string? size, string? medium, int page = 1, int pageSize = 12)
+        //{
+        //    IEnumerable<Models.Artwork> artworks;
+
+        //    artworks = await _artworkService.SearchWithPagingAsync(search, size, medium,  page, pageSize);
+
+        //    ViewBag.Page = page;
+        //    ViewBag.PageSize = pageSize;
+        //    ViewBag.Mediums = await _mediumService.GetAllAsync();
+        //    ViewBag.SearchQuery = search;
+        //    ViewBag.SelectedSize = size;
+        //    ViewBag.SelectedMedium = medium;
+
+        //    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+        //    {
+        //        return PartialView("_ArtworkGrid", artworks);
+        //    }
+
+        //    return View(artworks);
+        //}
+
+        public async Task<IActionResult> Index( int? categoryId, int? spaceId, string? search, string? size, string? medium, int page = 1, int pageSize = 12)
         {
-            IEnumerable<Models.Artwork> artworks;
+            var result = await _artworkService.SearchWithPagingAsync( categoryId, spaceId, search, size, medium, page, pageSize);
 
-            artworks = await _artworkService.SearchWithPagingAsync(
-                search,
-                size,
-                medium,
-                page,
-                pageSize
-            );
-
-            ViewBag.Page = page;
-            ViewBag.PageSize = pageSize;
-
+            ViewBag.Page = result.Page;
+            ViewBag.PageSize = result.PageSize;
+            ViewBag.TotalCount = result.TotalCount;
             ViewBag.Mediums = await _mediumService.GetAllAsync();
             ViewBag.SearchQuery = search;
             ViewBag.SelectedSize = size;
             ViewBag.SelectedMedium = medium;
+            ViewBag.SelectedCategoryId = categoryId;
+            ViewBag.SelectedSpaceId = spaceId;
+
+            if (categoryId.HasValue) 
+            {
+                var category = await _categoryService.GetByIdAsync(categoryId.Value);
+                if (category != null)
+                {
+                    ViewBag.Name = category.Name;
+                }
+            }
+
+            if (spaceId.HasValue) 
+            {
+                var space = await _spaces.GetByIdAsync(spaceId.Value);
+                if (space != null)
+                {
+                    ViewBag.Name = space.Name;
+                }
+            }
 
             if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {
-                return PartialView("_ArtworkGrid", artworks);
+                return PartialView("_ArtworkGrid", result.Items);
             }
 
-            return View(artworks);
+            return View(result.Items);
         }
-      
+
+
+
 
         public async Task<IActionResult> Details(int id)
         {

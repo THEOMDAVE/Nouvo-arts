@@ -1,6 +1,6 @@
 @model IEnumerable<NouvoStudio.Models.Category>
 @{
-    ViewData["Title"] = "Categories — Nouvo Studio";
+    ViewData["Title"] = "Categories — Nouvo Art";
     ViewData["Page"] = "categories";
 }
 
@@ -15,7 +15,7 @@
             @foreach (var category in Model)
             {
                 <div class="col-6 col-md-4 col-lg-3">
-                    <a class="text-decoration-none" asp-controller="Artworks" asp-action="Index" asp-route-category="@category.Id" aria-label="Open @category.Name category">
+                    <a class="text-decoration-none" asp-controller="Artworks" asp-action="Index" asp-route-categoryId="@category.Id" aria-label="Open @category.Name category">
                         <div class="card category-card">
                             <img class="bg-img" src="@category.Image" alt="@category.Name">
                             <div class="title">@category.Name</div>

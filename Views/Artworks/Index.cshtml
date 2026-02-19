@@ -1,8 +1,12 @@
 @model IEnumerable<NouvoStudio.Models.Artwork>
 @{
-    ViewData["Title"] = "Artworks — Nouvo Studio";
+    ViewData["Title"] = "Artworks — Nouvo Art";
     ViewData["Page"] = "artworks";
     var mediums = ViewBag.Mediums as IEnumerable<NouvoStudio.Models.Medium>;
+
+    var totalPages = (int)Math.Ceiling((double)ViewBag.TotalCount / ViewBag.PageSize);
+
+    var names = ViewBag.Name ?? "";
 }
 
 <main class="py-5">
@@ -12,8 +16,8 @@
 
             <!-- Left Side Title -->
             <div>
-                <h1 class="section-title m-0">Artworks</h1>
-                <div class="text-muted" id="artworksCount">@Model.Count() artwork@(Model.Count() != 1 ? "s" : "")</div>
+                <h1 class="section-title m-0">Artworks </h1>
+                <div class="text-muted" id="artworksCount">@ViewBag.TotalCount Artworks @(!string.IsNullOrWhiteSpace(names) ? "From " + names: "")</div>
             </div>
 
             <!-- Right Side Filters -->
@@ -57,11 +61,16 @@
             </form>
         </div>
 
-        <div class="masonry-container" id="artworksGrid">
+        @* <div class="masonry-container" id="artworksGrid"> *@
+           @*  <div id="artworksGrid">
+
                 @await Html.PartialAsync("_ArtworkGrid", Model)
             
         
-        </div>
+        </div> *@
+      <div id="artworksGrid">
+    @await Html.PartialAsync("_ArtworkGrid", Model)
+</div>
 
         @if (!Model.Any())
         {
@@ -106,10 +115,63 @@
     </div>
 </div>
 
+<script>
+    let page = 1;
+    let loading = false;
 
+    const grid = document.querySelector('#artworksGrid');
+    let msnry;
+
+    // Initialize Masonry after images load
+    imagesLoaded(grid, function () {
+        msnry = new Masonry(grid, {
+            itemSelector: '.masonry-item',
+            percentPosition: true
+        });
+    });
+
+    window.addEventListener("scroll", function () {
+
+        if (loading) return;
+
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 300) {
+
+            loading = true;
+            page++;
+
+            const params = new URLSearchParams();
+            params.append("page", page);
+
+            fetch('@Url.Action("Index", "Artworks")?' + params.toString(), {
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            })
+            .then(res => res.text())
+            .then(html => {
+
+                if (html.trim() === "") return;
+
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+
+                const newItems = tempDiv.querySelectorAll('.masonry-item');
+
+                newItems.forEach(item => grid.appendChild(item));
+
+                imagesLoaded(grid, function () {
+                    msnry.appended(newItems);
+                    msnry.layout();
+                });
+
+                loading = false;
+            });
+        }
+    });
+</script>
+@* 
 
 <script>
-
     let page = 1;
     let loading = false;
 
@@ -122,8 +184,27 @@
             loading = true;
             page++;
 
-            fetch(`/Artworks/Index?page=${page}&search=@ViewBag.SearchQuery&size=@ViewBag.SelectedSize&medium=@ViewBag.SelectedMedium`,
-            {
+            // Build query params dynamically
+            const params = new URLSearchParams();
+
+            params.append("page", page);
+
+            if ("@ViewBag.SelectedCategoryId" !== "")
+                params.append("categoryId", "@ViewBag.SelectedCategoryId");
+
+            if ("@ViewBag.SelectedSpaceId" !== "")
+                params.append("spaceId", "@ViewBag.SelectedSpaceId");
+
+            if ("@ViewBag.SearchQuery" !== "")
+                params.append("search", "@ViewBag.SearchQuery");
+
+            if ("@ViewBag.SelectedSize" !== "")
+                params.append("size", "@ViewBag.SelectedSize");
+
+            if ("@ViewBag.SelectedMedium" !== "")
+                params.append("medium", "@ViewBag.SelectedMedium");
+
+            fetch('@Url.Action("Index", "Artworks")?' + params.toString(), {
                 headers: {
                     "X-Requested-With": "XMLHttpRequest"
                 }
@@ -132,15 +213,25 @@
             .then(html => {
 
                 if (html.trim() !== "") {
-                    document.getElementById("artworksGrid").insertAdjacentHTML("beforeend", html);
+                       const grid = document.getElementById("artworksGrid");
+
+                        grid.insertAdjacentHTML("beforeend", html);
+
+                        // 🔥 Force masonry to recalculate layout
+                        grid.style.display = "none";
+                        grid.offsetHeight; // trigger reflow
+                        grid.style.display = "";
+
+
                     loading = false;
                 }
             });
         }
     });
 
-</script>
 
+</script>
+ *@
 @* 
             @foreach (var artwork in Model)
             {

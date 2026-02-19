@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using NouvoStudio.Data;
 using NouvoStudio.Models;
 
@@ -107,28 +107,64 @@ namespace NouvoStudio.Services
             return await artworks.OrderBy(a => a.Name).ToListAsync();
         }
 
-        public async Task<IEnumerable<Models.Artwork>> SearchWithPagingAsync(
-  string search,
-  string size,
-  string medium,
-  int page,
-  int pageSize)
+        //public async Task<IEnumerable<Models.Artwork>> SearchWithPagingAsync(string search, string size, string medium, int page, int pageSize)
+        //{
+        //    var query = _context.Artworks.AsQueryable();
+
+        //    if (!string.IsNullOrEmpty(search))
+        //        query = query.Where(x => x.Name.Contains(search));
+
+        //    if (!string.IsNullOrEmpty(size))
+        //        query = query.Where(x => x.Size == size);
+
+        //    if (!string.IsNullOrEmpty(medium))
+        //        query = query.Where(x => x.Medium == medium);
+
+        //    return await query
+        //        .Skip((page - 1) * pageSize)
+        //        .Take(pageSize)
+        //        .ToListAsync();
+        //}
+        public async Task<PagedResult<Models.Artwork>> SearchWithPagingAsync( int? categoryId, int? spaceId, string search, string size, string medium, int page, int pageSize)
         {
             var query = _context.Artworks.AsQueryable();
 
+            // 🔹 Category filter
+            if (categoryId.HasValue)
+                query = query.Where(x => x.CategoryIds.Contains(categoryId.Value.ToString()));
+
+            // 🔹 Space filter
+            if (spaceId.HasValue)
+                query = query.Where(x => x.SpaceIds.Contains(spaceId.Value.ToString()));
+
+            // 🔹 Search filter
             if (!string.IsNullOrEmpty(search))
                 query = query.Where(x => x.Name.Contains(search));
 
+            // 🔹 Size filter
             if (!string.IsNullOrEmpty(size))
                 query = query.Where(x => x.Size == size);
 
+            // 🔹 Medium filter
             if (!string.IsNullOrEmpty(medium))
                 query = query.Where(x => x.Medium == medium);
 
-            return await query
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderByDescending(x => x.Id) // optional but recommended
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
+
+            return new PagedResult<Models.Artwork>
+            {
+                Items = items,
+                TotalCount = totalCount,
+                Page = page,
+                PageSize = pageSize
+            };
         }
+
     }
 }

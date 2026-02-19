@@ -1,14 +1,14 @@
 @model NouvoStudio.Models.Artwork
 @{
-    ViewData["Title"] = $"{Model.Name} — Nouvo Studio";
+    ViewData["Title"] = $"{Model.Name} — Nouvo Art";
     ViewData["Page"] = "artworks";
 }
 
 <main class="py-5">
     <div class="container">
         <div class="row">
-            <div class="col-lg-7 d-flex justify-content-center">
-                <img src="@Model.Image" alt="@Model.Name" style="height: 80vh !important;" class="img-fluid rounded">
+            <div class="col-lg-7 d-flex justify-content-center mainImageOfArtwork">
+                <img src="@Model.Image" alt="@Model.Name" @* style="height: 80vh !important;" *@ class="img-fluid rounded">
             </div>
             <div class="col-lg-5">
                 <h1 class="section-title">@Model.Name</h1>
