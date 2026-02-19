@@ -39,7 +39,7 @@
                         @foreach (var space in spaces)
                         {
                             <div class="netflix-carousel-item">
-                                <a asp-controller="Artworks" asp-action="Index" asp-route-category="@space.Id" class="text-decoration-none">
+                                <a asp-controller="Artworks" asp-action="Index" asp-route-spaceId="@space.Id" class="text-decoration-none">
                                     <div class="netflix-card">
                                         <div class="netflix-card-image-wrapper">
                                             <img class="netflix-card-image" src="@space.Image" alt="@space.Name" loading="lazy">

@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
 using NouvoStudio.Services;
 using NouvoStudio.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Hosting;
-using System.IO;
+using NouvoStudio.Utilities;
+using NouvoStudio.Exceptions;
 
 namespace NouvoStudio.Controllers
 {
@@ -19,17 +20,28 @@ namespace NouvoStudio.Controllers
         private readonly IContactService _contactService;
         private readonly ICustomizationService _customizationService;
         private readonly IMediumService _mediumService;
+        private readonly ILogger<AdminController> _logger;
 
-        public AdminController(ICategoryService categoryService,ISpacesService spacesService, IArtworkService artworkService, IWebHostEnvironment environment, IBlogService blogService, IContactService contactService, ICustomizationService customizationService, IMediumService mediumService)
+        public AdminController(
+            ICategoryService categoryService,
+            ISpacesService spacesService, 
+            IArtworkService artworkService, 
+            IWebHostEnvironment environment, 
+            IBlogService blogService, 
+            IContactService contactService, 
+            ICustomizationService customizationService, 
+            IMediumService mediumService,
+            ILogger<AdminController> logger)
         {
-            _categoryService = categoryService;
-            _spacesService = spacesService;
-            _artworkService = artworkService;
-            _environment = environment;
-            _blogService = blogService;
-            _contactService = contactService;
-            _customizationService = customizationService;
-            _mediumService = mediumService;
+            _categoryService = categoryService ?? throw new ArgumentNullException(nameof(categoryService));
+            _spacesService = spacesService ?? throw new ArgumentNullException(nameof(spacesService));
+            _artworkService = artworkService ?? throw new ArgumentNullException(nameof(artworkService));
+            _environment = environment ?? throw new ArgumentNullException(nameof(environment));
+            _blogService = blogService ?? throw new ArgumentNullException(nameof(blogService));
+            _contactService = contactService ?? throw new ArgumentNullException(nameof(contactService));
+            _customizationService = customizationService ?? throw new ArgumentNullException(nameof(customizationService));
+            _mediumService = mediumService ?? throw new ArgumentNullException(nameof(mediumService));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task<IActionResult> Index()
@@ -77,8 +89,24 @@ namespace NouvoStudio.Controllers
 
             if (imageFile != null && imageFile.Length > 0)
             {
-                var savedPath = await SaveImageAsync(imageFile);
-                category.Image = savedPath;
+                var (isValid, errorMessage) = FileUploadValidator.ValidateImageFile(imageFile);
+                if (!isValid)
+                {
+                    ModelState.AddModelError("Image", errorMessage);
+                    return View(category);
+                }
+
+                try
+                {
+                    var savedPath = await SaveImageAsync(imageFile);
+                    category.Image = savedPath;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error saving category image");
+                    ModelState.AddModelError("Image", "An error occurred while saving the image. Please try again.");
+                    return View(category);
+                }
             }
 
             if (string.IsNullOrWhiteSpace(category.Image))
@@ -88,8 +116,21 @@ namespace NouvoStudio.Controllers
 
             if (ModelState.IsValid)
             {
-                await _categoryService.CreateAsync(category);
-                return RedirectToAction(nameof(Categories));
+                try
+                {
+                    await _categoryService.CreateAsync(category);
+                    TempData["SuccessMessage"] = "Category created successfully.";
+                    return RedirectToAction(nameof(Categories));
+                }
+                catch (ValidationException ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error creating category");
+                    ModelState.AddModelError(string.Empty, "An error occurred while creating the category. Please try again.");
+                }
             }
             return View(category);
         }
@@ -462,15 +503,24 @@ namespace NouvoStudio.Controllers
 
         private async Task<string> SaveImageAsync(IFormFile imageFile)
         {
+            if (imageFile == null || imageFile.Length == 0)
+                throw new ArgumentException("Image file is required.", nameof(imageFile));
+
             var imagesDir = Path.Combine(_environment.WebRootPath, "images");
             if (!Directory.Exists(imagesDir))
             {
                 Directory.CreateDirectory(imagesDir);
             }
 
-            var extension = Path.GetExtension(imageFile.FileName);
-            var fileName = $"{Guid.NewGuid():N}{extension}";
+            var fileName = FileUploadValidator.GetSafeFileName(imageFile.FileName);
             var physicalPath = Path.Combine(imagesDir, fileName);
+
+            // Ensure the file doesn't already exist (unlikely with GUID, but safe)
+            if (System.IO.File.Exists(physicalPath))
+            {
+                fileName = FileUploadValidator.GetSafeFileName(imageFile.FileName);
+                physicalPath = Path.Combine(imagesDir, fileName);
+            }
 
             using (var stream = new FileStream(physicalPath, FileMode.Create))
             {
@@ -478,6 +528,7 @@ namespace NouvoStudio.Controllers
             }
 
             var relativePath = $"/images/{fileName}";
+            _logger.LogInformation("Image saved: {RelativePath}", relativePath);
             return relativePath;
         }
 

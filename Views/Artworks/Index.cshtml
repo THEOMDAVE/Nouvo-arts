@@ -1,13 +1,36 @@
-@model IEnumerable<NouvoStudio.Models.Artwork>
+@model ArtworkListViewModel
 @{
     ViewData["Title"] = "Artworks — Nouvo Art";
     ViewData["Page"] = "artworks";
-    var mediums = ViewBag.Mediums as IEnumerable<NouvoStudio.Models.Medium>;
+    var mediums = Model.Mediums;
+    
 
-    var totalPages = (int)Math.Ceiling((double)ViewBag.TotalCount / ViewBag.PageSize);
-
-    var names = ViewBag.Name ?? "";
 }
+<style>
+    /* Spinner fade animation */
+    .spinner-wrapper {
+        opacity: 0;
+        transition: opacity 0.4s ease-in-out;
+        pointer-events: none;
+    }
+
+        .spinner-wrapper.show {
+            opacity: 1;
+        }
+
+    /* Artwork fade-in animation */
+    .fade-item {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+        .fade-item.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+</style>
 
 <main class="py-5">
     <div class="container">
@@ -17,7 +40,15 @@
             <!-- Left Side Title -->
             <div>
                 <h1 class="section-title m-0">Artworks </h1>
-                <div class="text-muted" id="artworksCount">@ViewBag.TotalCount Artworks @(!string.IsNullOrWhiteSpace(names) ? "From " + names: "")</div>
+                <div class="text-muted">
+                    @Model.TotalCount Artworks
+                    @if (!string.IsNullOrWhiteSpace(Model.Name))
+                    {
+                        <span>From <strong>@Model.Name</strong></span>
+                    }
+                </div>
+
+
             </div>
 
             <!-- Right Side Filters -->
@@ -29,7 +60,7 @@
                         <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
                         <input type="text"
                                name="search"
-                               value="@ViewBag.SearchQuery"
+                               value="@Model.SearchQuery"
                                class="form-control"
                                placeholder="Search..."
                                oninput="autoFilter()">
@@ -39,9 +70,9 @@
                 <div>
                     <select name="size" class="form-select" onchange="autoFilter()">
                         <option value="">All sizes</option>
-                        <option value="Small" selected="@(ViewBag.SelectedSize == "Small")">Small</option>
-                        <option value="Medium" selected="@(ViewBag.SelectedSize == "Medium")">Medium</option>
-                        <option value="Large" selected="@(ViewBag.SelectedSize == "Large")">Large</option>
+                        <option value="Small" selected="@(Model.SelectedSize == "Small")">Small</option>
+                        <option value="Medium" selected="@(Model.SelectedSize == "Medium")">Medium</option>
+                        <option value="Large" selected="@(Model.SelectedSize == "Large")">Large</option>
                     </select>
                 </div>
 
@@ -53,7 +84,7 @@
                         {
                             @foreach (var medium in mediums)
                             {
-                                <option value="@medium.Name" selected="@(ViewBag.SelectedMedium == medium.Name)">@medium.Name</option>
+                                <option value="@medium.Name" selected="@(Model.SelectedMedium == medium.Name)">@medium.Name</option>
                             }
                         }
                     </select>
@@ -61,22 +92,36 @@
             </form>
         </div>
 
-        @* <div class="masonry-container" id="artworksGrid"> *@
-           @*  <div id="artworksGrid">
-
-                @await Html.PartialAsync("_ArtworkGrid", Model)
-            
-        
+@* 
+        <div id="artworksGrid" class="row-masonry">
+            @await Html.PartialAsync("_ArtworkGrid", Model.Artworks)
         </div> *@
-      <div id="artworksGrid">
-    @await Html.PartialAsync("_ArtworkGrid", Model)
-</div>
+        <div id="artworksGrid">
+            <div class="grid-sizer"></div>
+            @await Html.PartialAsync("_ArtworkGrid", Model.Artworks)
+        </div>
 
-        @if (!Model.Any())
+
+
+        <div id="loadingSpinner" class="text-center py-4" style="display:none;">
+            <div class="spinner-border text-dark" role="status"></div>
+        </div>
+
+
+        @* <div id="loadingSpinner" class="text-center py-4 d-none">
+            <div class="spinner-border text-dark" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div> *@
+
+
+        @if (!(Model.Artworks?.Any() ?? false))
         {
             <div class="text-center py-5">
                 <h3 class="text-muted">No artworks found</h3>
-                <p class="text-muted">Try adjusting your search criteria or browse all categories.</p>
+                <p class="text-muted">
+                    Try adjusting your search criteria or browse all categories.
+                </p>
             </div>
         }
     </div>
@@ -116,143 +161,89 @@
 </div>
 
 <script>
-    let page = 1;
-    let loading = false;
+     let masonry;
 
-    const grid = document.querySelector('#artworksGrid');
-    let msnry;
+    document.addEventListener("DOMContentLoaded", function () {
 
-    // Initialize Masonry after images load
-    imagesLoaded(grid, function () {
-        msnry = new Masonry(grid, {
+        const grid = document.querySelector('#artworksGrid');
+
+        masonry = new Masonry(grid, {
             itemSelector: '.masonry-item',
+            columnWidth: '.grid-sizer',   // 🔥 THIS LINE
             percentPosition: true
         });
+
+        imagesLoaded(grid).on('progress', function () {
+            masonry.layout();
+        });
+
     });
 
-    window.addEventListener("scroll", function () {
+    let page = @Model.Page;
+    let loading = false;
+    let noMoreData = false;
 
-        if (loading) return;
+    const spinner = document.getElementById("loadingSpinner");
 
-        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 300) {
+    window.addEventListener("scroll", async () => {
+
+        if (loading || noMoreData) return;
+
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 1000) {
 
             loading = true;
+            spinner.classList.add("show"); // ✅ Fade in spinner
             page++;
 
-            const params = new URLSearchParams();
-            params.append("page", page);
+            const params = new URLSearchParams({
+                page: page,
+                categoryId: "@(Model.SelectedCategoryId?.ToString() ?? "")",
+                spaceId: "@(Model.SelectedSpaceId?.ToString() ?? "")",
+                search: "@(Model.SearchQuery ?? "")",
+                size: "@(Model.SelectedSize ?? "")",
+                medium: "@(Model.SelectedMedium ?? "")"
+            });
 
-            fetch('@Url.Action("Index", "Artworks")?' + params.toString(), {
-                headers: {
-                    "X-Requested-With": "XMLHttpRequest"
-                }
-            })
-            .then(res => res.text())
-            .then(html => {
+            const response = await fetch('@Url.Action("Index", "Artworks")?' + params, {
+                headers: { "X-Requested-With": "XMLHttpRequest" }
+            });
 
-                if (html.trim() === "") return;
+            const html = await response.text();
 
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = html;
+            const temp = document.createElement("div");
+            temp.innerHTML = html;
 
-                const newItems = tempDiv.querySelectorAll('.masonry-item');
+            const newItems = temp.querySelectorAll(".masonry-item");
 
-                newItems.forEach(item => grid.appendChild(item));
+            if (!newItems.length) {
+                noMoreData = true;
+                spinner.classList.remove("show");
+                return;
+            }
 
-                imagesLoaded(grid, function () {
-                    msnry.appended(newItems);
-                    msnry.layout();
+                const grid = document.querySelector('#artworksGrid');
+
+            newItems.forEach(item => {
+                item.classList.add("fade-item");
+                grid.appendChild(item);
+            });
+
+            imagesLoaded(newItems, function () {
+
+                masonry.appended(newItems);   // 🔥 Tell Masonry new items added
+                masonry.layout();             // 🔥 Recalculate positions
+
+                newItems.forEach((item, index) => {
+                    setTimeout(() => {
+                        item.classList.add("show");
+                    }, index * 80);
                 });
 
-                loading = false;
             });
+
+
+            spinner.classList.remove("show"); // ✅ Fade out spinner
+            loading = false;
         }
     });
 </script>
-@* 
-
-<script>
-    let page = 1;
-    let loading = false;
-
-    window.addEventListener("scroll", () => {
-
-        if (loading) return;
-
-        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 300) {
-
-            loading = true;
-            page++;
-
-            // Build query params dynamically
-            const params = new URLSearchParams();
-
-            params.append("page", page);
-
-            if ("@ViewBag.SelectedCategoryId" !== "")
-                params.append("categoryId", "@ViewBag.SelectedCategoryId");
-
-            if ("@ViewBag.SelectedSpaceId" !== "")
-                params.append("spaceId", "@ViewBag.SelectedSpaceId");
-
-            if ("@ViewBag.SearchQuery" !== "")
-                params.append("search", "@ViewBag.SearchQuery");
-
-            if ("@ViewBag.SelectedSize" !== "")
-                params.append("size", "@ViewBag.SelectedSize");
-
-            if ("@ViewBag.SelectedMedium" !== "")
-                params.append("medium", "@ViewBag.SelectedMedium");
-
-            fetch('@Url.Action("Index", "Artworks")?' + params.toString(), {
-                headers: {
-                    "X-Requested-With": "XMLHttpRequest"
-                }
-            })
-            .then(res => res.text())
-            .then(html => {
-
-                if (html.trim() !== "") {
-                       const grid = document.getElementById("artworksGrid");
-
-                        grid.insertAdjacentHTML("beforeend", html);
-
-                        // 🔥 Force masonry to recalculate layout
-                        grid.style.display = "none";
-                        grid.offsetHeight; // trigger reflow
-                        grid.style.display = "";
-
-
-                    loading = false;
-                }
-            });
-        }
-    });
-
-
-</script>
- *@
-@* 
-            @foreach (var artwork in Model)
-            {
-                <div class="masonry-item">
-                    <div class="art-card">
-                         <button class="btn btn-light rounded-circle fav shadow-sm" data-fav-id=GetAllAsync"@artwork.Id" aria-label="Toggle favorite">
-                            <i class="bi bi-heart-fill text-dark"></i>
-                        </button> 
-                        <a asp-controller="Artworks" asp-action="Details" asp-route-id="@artwork.Id">
-                            <img class="thumb" src="@artwork.Image" alt="@artwork.Name" loading="lazy" decoding="async">
-                        </a>
-                        <div class="overlay">
-                            <h5 class="artwork-name">@artwork.Name</h5>
-                            <p class="artwork-details">
-                             @artwork.Code • @artwork.HeightFeet X @artwork.WidthFeet • @artwork.Medium
-                                 @if (artwork.Price.HasValue)
-                                {
-                                    <br><span class="price">$@artwork.Price.Value.ToString("F0")</span>
-                                }
-                                </p> 
-                        </div>
-                    </div>
-                </div>
-            } *@
