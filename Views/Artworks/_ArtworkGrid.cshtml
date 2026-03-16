@@ -47,11 +47,12 @@
 
 @foreach (var artwork in Model)
 {
+    var webpImage = System.IO.Path.ChangeExtension(artwork.Image, ".webp");
     <div class="masonry-item">
-        <div class="art-card shadow-sm">
+        <div class="art-card shadow-sm">    
             <a asp-controller="Artworks" asp-action="Details" asp-route-id="@artwork.Id" class="text-decoration-none text-dark">
 
-                <img src="@artwork.Image" class="img-fluid w-100" alt="@artwork.Name" loading="lazy" decoding="async" />
+                <img src="@($"{artwork.Image}.webp")" class="img-fluid w-100" alt="@artwork.Name" loading="lazy" decoding="async" />
 
                 <div class="overlay p-3">
                     <h6 class="fw-semibold mb-1">@artwork.Name</h6>

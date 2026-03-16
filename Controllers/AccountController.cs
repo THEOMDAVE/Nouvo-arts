@@ -51,14 +51,15 @@ namespace NouvoStudio.Controllers
             if (string.Equals(username, _adminOptions.Username, StringComparison.Ordinal))
             {
                 // Check password hash first (new method)
+                //if (!string.IsNullOrEmpty(_adminOptions.PasswordHash))
+                //{
+                //    isAuthenticated = PasswordHasher.VerifyPassword(password, _adminOptions.PasswordHash);
+                //}
+                //// Fallback to plain password for migration (backward compatibility)
+                //else 
                 if (!string.IsNullOrEmpty(_adminOptions.PasswordHash))
                 {
-                    isAuthenticated = PasswordHasher.VerifyPassword(password, _adminOptions.PasswordHash);
-                }
-                // Fallback to plain password for migration (backward compatibility)
-                else if (!string.IsNullOrEmpty(_adminOptions.Password))
-                {
-                    isAuthenticated = string.Equals(password, _adminOptions.Password, StringComparison.Ordinal);
+                    isAuthenticated = string.Equals(password, _adminOptions.PasswordHash, StringComparison.Ordinal);
                     _logger.LogWarning("Using plain text password authentication. Please migrate to password hash.");
                 }
             }
